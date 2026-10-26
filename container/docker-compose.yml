@@ -1,0 +1,64 @@
+services:
+    edg-1:
+        image: inductiveautomation/ignition:8.1.45
+        hostname: edg-1
+        ports: 
+            - 8088:8088
+        volumes:
+            - edg-1-data:/usr/local/bin/ignition/data
+            - ./edg-1/gw-init/ignition/uuid.txt:/usr/local/bin/ignition/data/.uuid
+            - ./edg-1/gw-init/ignition/metro-keystore:/usr/local/bin/ignition/data/local/metro-keystore
+            - ./edg-1/gw-init/backup.gwbk:/restore.gwbk
+        networks:
+            - edg-1
+        environment:
+            - IGNITION_EDITION=edge
+            - GATEWAY_ADMIN_PASSWORD_FILE=/run/secrets/gw-admin-pw
+            - DISABLE_QUICKSTART=true
+            - ACCEPT_IGNITION _EULA=Y
+            - GATEWAY_MODULES_ENABLED=opc-ua,tag-historian,perspective,siemens-drivers,web-developer,web-browser
+        secrets:
+            - gw-admin-pw
+        command: >
+            -n edg-1            
+            -m 1024
+            -r /restore.gwbk
+            --
+            wrapper.java.initmemory=512
+    edg-2:
+        image: inductiveautomation/ignition:8.1.45
+        hostname: edg-2
+        ports: 
+            - 8089:8088
+        volumes:
+            - edg-2-data:/usr/local/bin/ignition/data
+            - ./edg-2/gw-init/ignition/uuid.txt:/usr/local/bin/ignition/data/.uuid
+            - ./edg-2/gw-init/ignition/metro-keystore:/usr/local/bin/ignition/data/local/metro-keystore
+            - ./edg-2/gw-init/backup.gwbk:/restore.gwbk
+        networks:
+            - edg-2
+        environment:
+            - IGNITION_EDITION=edge
+            - GATEWAY_ADMIN_PASSWORD_FILE=/run/secrets/gw-admin-pw
+            - DISABLE_QUICKSTART=true
+            - ACCEPT_IGNITION _EULA=Y
+            - GATEWAY_MODULES_ENABLED=opc-ua,tag-historian,perspective,siemens-drivers,web-developer,web-browser
+        secrets:
+            - gw-admin-pw
+        command: >
+            -n edg-2           
+            -m 1024
+            -r /restore.gwbk
+            --
+            wrapper.java.initmemory=512
+networks:
+    edg-1:
+    edg-2:
+secrets:
+    gw-admin-pw:
+        file: ./secrets/GW_ADMIN_PW
+volumes:
+    edg-1-data:
+    edg-2-data:
+ 
+
